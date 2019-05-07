@@ -1,37 +1,14 @@
-const express = require('express'),
-      path = require('path'),
-      morgan = require('morgan'),
-      mysql = require('mysql'),
-      myConnection = require('express-myconnection');
+const express = require('express');
+const router = express.Router();
 
-const app = express();
+const indexController = require('../controllers/indexController');
 
-// importing routes
-const customerRoutes = require('./routes/index');
+router.get('/', indexController.list);
+router.post('/add' ,indexController.save);
+router.get('/delete/:id', indexController.delete);
+router.get('/update/:id', indexController.edit );
+router.post('/update/:id', indexController.update );
 
-// settings
-app.set('port', process.env.PORT || 3000);
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+module.exports = router;
 
-// middlewares
-app.use(morgan('dev'));
-app.use(myConnection(mysql, {
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  port: 3306,
-  database: 'employed_db'
-}, 'single'));
-app.use(express.urlencoded({extended: false}));
 
-// routes
-app.use('/', customerRoutes);
-
-// static files
-app.use(express.static(path.join(__dirname, 'public')));
-
-// starting the server
-app.listen(app.get('port'), () => {
-  console.log(`server on port ${app.get('port')}`);
-});
